@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 pandas_data_args = {"sep": "\t",
-                    "names": ["altitude", "meters", "temp", "RH", "speed", "direction"],
+                    "names": ["altitude", "pressure", "temp", "RH", "speed", "direction"],
                     "header": 0}
 
 
