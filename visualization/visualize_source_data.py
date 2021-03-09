@@ -16,6 +16,7 @@ def plot_dataframe(data: pd.DataFrame, dataset_name=None):
 
     save_figure(dataset_name, fig)
     plt.show()
+    plt.close()
 
 
 def save_figure(dataset_name, fig):
@@ -57,4 +58,4 @@ def add_subplot(axis, vertical, var, vertical_label=None, horizontal_label=None)
 def test_plot():
     plot_dataframe(data_loader.get_site_2_data(), "Site 2")
 
-test_plot()
+# test_plot()
