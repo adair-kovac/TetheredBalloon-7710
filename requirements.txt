@@ -1,0 +1,4 @@
+pandas
+metpy
+jupyter
+ipykernel
