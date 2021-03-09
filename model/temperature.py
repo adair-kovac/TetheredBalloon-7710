@@ -15,10 +15,18 @@ def add_temp_columns(data: pd.DataFrame):
         temp_k = as_kelvin(row["temp"])
         theta = potential_temperature(temp_k, row["pressure"])
         r = mixing_ratio_from_observations(row["RH"], row["pressure"], temp_k)
+        simplified_theta = simplified_potential_temp(row["altitude"], temp_k)
         data.at[idx, "temp_K"] = temp_k
         data.at[idx, "theta"] = theta
         data.at[idx, "mixing_ratio"] = r
         data.at[idx, "theta_v"] = virtual_temperature(theta, r)
+        data.at[idx, "theta_simple"] = simplified_theta
+        data.at[idx, "theta_difference"] = theta - simplified_theta
+
+
+def simplified_potential_temp(height, temp):
+    Gamma_d = 9.8 * 1/1000 # K/km * km/m = K/m
+    return temp + Gamma_d*height
 
 
 def as_kelvin(temp_in_C):
