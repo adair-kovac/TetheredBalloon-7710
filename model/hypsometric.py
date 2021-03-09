@@ -34,6 +34,7 @@ def add_estimated_height(data: pd.DataFrame):
             break
         cumulative_height = cumulative_height + layer_heights[i]
         i = i + 1
+    data["height_diff"] = data["altitude"] - data["estimated_height"]
 
 
 def get_layer_height(layer: Layer) -> HeightMeters:

@@ -15,9 +15,11 @@ def plot_estimated_vs_actual_height(site_number: int):
     add_estimated_height(data)
     columns = [
         Line("altitude", "From data", "b"),
-        Line("estimated_height", "From hypsometric eq", "r"),
+        Line("estimated_height", "From hypsometric equation", "r"),
     ]
     plot_columns_vs_pressure(data, columns, "Height (m)", "Height Comparison - Site " + str(site_number))
+    plot_columns_vs_pressure(data, [Line("height_diff", "Altitude - Estimate", "b")], "Height Diff (m)",
+                             "Height Diff - Site " + str(site_number))
 
 
 def plot_columns_vs_pressure(data: pd.DataFrame, columns: List[Line], x_label, title):
@@ -38,4 +40,4 @@ def plot_columns_vs_pressure(data: pd.DataFrame, columns: List[Line], x_label, t
 
 
 if __name__ == "__main__":
-    plot_estimated_vs_actual_height(1)
+    plot_estimated_vs_actual_height(2)

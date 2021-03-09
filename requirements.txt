@@ -1,4 +1,4 @@
 pandas
-metpy
 jupyter
 ipykernel
+matplotlib
