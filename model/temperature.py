@@ -22,6 +22,8 @@ def add_temp_columns(data: pd.DataFrame):
         data.at[idx, "theta_v"] = virtual_temperature(theta, r)
         data.at[idx, "theta_simple"] = simplified_theta
         data.at[idx, "theta_difference"] = theta - simplified_theta
+        data.at[idx, "specific_humidity"] = r/(1 + r)
+        data.at[idx, "virtual_temp"] = virtual_temperature(temp_k, r)
 
 
 def simplified_potential_temp(height, temp):
