@@ -82,7 +82,7 @@ def get_sensible_heat_flux(rho, wind_speed, surface_temp, reference_temp):
 
 
 def get_density(P, T_v):
-    return P/(R_d * T_v)
+    return P*100/(R_d * T_v)
 
 
 def test(number):
