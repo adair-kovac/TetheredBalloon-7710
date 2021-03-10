@@ -1,4 +1,4 @@
-from model.temperature import R_d, c_pd
+from model.temperature import R_d, c_pd, L_v
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from dataclasses import dataclass
@@ -72,7 +72,7 @@ def get_value(data_x, data_y, index=None, x=None):
 # wind_speed should be at reference height
 def get_latent_heat_flux(rho, wind_speed, surface_q, reference_q):
     print("Drying power: {:.2E}".format(surface_q - reference_q))
-    return rho * C_W * wind_speed * (surface_q - reference_q)
+    return rho * L_v * C_W * wind_speed * (surface_q - reference_q)
 
 
 # wind_speed should be at reference height
