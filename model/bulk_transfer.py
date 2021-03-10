@@ -10,12 +10,13 @@ margin_for_regression = 5 # include values within this many meters when smoothin
 
 
 @dataclass
-class HeatFluxes:
+class Fluxes:
     sensible: float
     latent: float
+    evaporative: float
 
 
-def get_heat_fluxes(data):
+def get_fluxes(data, debug=False):
     add_temp_columns(data)
     rho = get_average_density(data, reference_height)
     wind_speed = get_reference_value(data, "speed", reference_height)
@@ -23,17 +24,27 @@ def get_heat_fluxes(data):
     reference_temp = get_reference_value(data, "temp", reference_height)
     surface_q = get_surface_value(data, "specific_humidity")
     reference_q = get_reference_value(data, "specific_humidity", reference_height)
-    H_L = get_latent_heat_flux(rho, wind_speed, surface_q, reference_q)
+    sat_reference_q = get_reference_value(data, "sat_specific_humidity", reference_height)
+    evaporative = get_evaporative_flux(rho, wind_speed, surface_q, reference_q, sat_reference_q)
+    H_L = L_v * evaporative
     H_S = get_sensible_heat_flux(rho, wind_speed, surface_temp, reference_temp)
-    return HeatFluxes(H_S, H_L)
+    if debug:
+        print("\tDebug output:")
+        print("\t\trho: " + str(rho))
+        print("\t\twindspeed: " + str(wind_speed))
+        print("\t\tsurface_temp: " + str(surface_temp))
+        print("\t\treference_temp: " + str(reference_temp))
+        print("\t\tsurface_q: " + str(surface_q))
+        print("\t\treference_q: " + str(reference_q))
+        print("\t\tsat_reference_q: " + str(sat_reference_q))
+    return Fluxes(H_S, H_L, evaporative)
 
 
 def get_average_density(data, reference_height):
     reference_height = rebase_reference_height(data, reference_height)
     data = data[data["altitude"] <= reference_height]
-    average_T_v = data["virtual_temp"].sum()/len(data.index)
-    average_pressure = data["pressure"].sum()/len(data.index)
-    return get_density(average_pressure, average_T_v)
+    average_rho = data["rho"].sum()/len(data.index)
+    return average_rho
 
 
 def get_reference_value(data, value_column, reference_height):
@@ -70,9 +81,10 @@ def get_value(data_x, data_y, index=None, x=None):
 
 
 # wind_speed should be at reference height
-def get_latent_heat_flux(rho, wind_speed, surface_q, reference_q):
-    print("Drying power: {:.2E}".format(surface_q - reference_q))
-    return rho * L_v * C_W * wind_speed * (surface_q - reference_q)
+def get_evaporative_flux(rho, wind_speed, surface_q, reference_q, sat_reference_q):
+    drying_power = rho * C_W * wind_speed * (sat_reference_q - reference_q)
+    print("Drying power: {:.2E}".format(drying_power))
+    return rho * C_W * wind_speed * (surface_q - sat_reference_q) + drying_power
 
 
 # wind_speed should be at reference height
@@ -88,7 +100,7 @@ def get_density(P, T_v):
 def test(number):
     from data import data_loader
     data = getattr(data_loader, "get_site_" + str(number) + "_data")()
-    print(get_heat_fluxes(data))
+    print(get_fluxes(data))
 
 
 if __name__=="__main__":

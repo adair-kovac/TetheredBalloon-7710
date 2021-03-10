@@ -16,6 +16,8 @@ def add_temp_columns(data: pd.DataFrame):
         theta = potential_temperature(temp_k, row["pressure"])
         r = mixing_ratio_from_observations(row["RH"], row["pressure"], temp_k)
         simplified_theta = simplified_potential_temp(row["altitude"], temp_k)
+        e_s = clausius_clapeyron_e_s(temp_k)
+        q_s = .622 * e_s/row["pressure"]
         data.at[idx, "temp_K"] = temp_k
         data.at[idx, "theta"] = theta
         data.at[idx, "mixing_ratio"] = r
@@ -23,7 +25,10 @@ def add_temp_columns(data: pd.DataFrame):
         data.at[idx, "theta_simple"] = simplified_theta
         data.at[idx, "theta_difference"] = theta - simplified_theta
         data.at[idx, "specific_humidity"] = r/(1 + r)
-        data.at[idx, "virtual_temp"] = virtual_temperature(temp_k, r)
+        data.at[idx, "sat_specific_humidity"] = q_s
+        T_v = virtual_temperature(temp_k, r)
+        data.at[idx, "virtual_temp"] = T_v
+        data.at[idx, "rho"] = 100*row["pressure"]/(R_d * T_v)
 
 
 def simplified_potential_temp(height, temp):
